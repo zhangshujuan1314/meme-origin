@@ -5,6 +5,8 @@
   --color-meme-coral: #FF6B6B;
   --color-meme-cream: #FFFDF7;
   --color-meme-ink: #1A1A1A;
+  --color-meme-green: #22C55E;
+  --color-meme-red: #EF4444;
   --color-background: var(--color-meme-cream);
   --color-foreground: var(--color-meme-ink);
   --font-sans: var(--font-geist-sans);
@@ -15,4 +17,75 @@ body {
   background-color: var(--color-meme-cream);
   color: var(--color-meme-ink);
   font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Background emoji watermark */
+body::before {
+  content: "🔍 🎭 💬 🔥 🎲 📡";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 120px;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 80px;
+  line-height: 200px;
+  transform: rotate(-5deg);
+}
+
+/* Animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+@keyframes typewriter-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out both;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-typewriter::after {
+  content: "_";
+  animation: typewriter-cursor 0.8s infinite;
+}
+
+/* Staggered card entrance */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* Gold left border for high-credibility */
+.credibility-high {
+  border-left: 6px solid var(--color-meme-yellow);
+  padding-left: calc(1.5rem - 3px);
 }
