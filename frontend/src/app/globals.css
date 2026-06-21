@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-meme-yellow: #FFD700;
+  --color-meme-yellow: #F0C83C;
   --color-meme-coral: #FF6B6B;
-  --color-meme-cream: #FFFDF7;
+  --color-meme-cream: #FFFFFF;
   --color-meme-ink: #1A1A1A;
   --color-meme-green: #22C55E;
   --color-meme-red: #EF4444;
+  --color-meme-gray: #F5F5F5;
   --color-background: var(--color-meme-cream);
   --color-foreground: var(--color-meme-ink);
   --font-sans: var(--font-geist-sans);
@@ -14,48 +15,34 @@
 }
 
 body {
-  background-color: var(--color-meme-cream);
+  background-color: #FFFFFF;
   color: var(--color-meme-ink);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* Background emoji watermark */
+/* Subtle background texture */
 body::before {
-  content: "🔍 🎭 💬 🔥 🎲 📡";
+  content: "";
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  font-size: 120px;
-  opacity: 0.03;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: radial-gradient(circle at 20% 50%, rgba(240,200,60,0.04) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(240,200,60,0.03) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 80%, rgba(240,200,60,0.02) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: 80px;
-  line-height: 200px;
-  transform: rotate(-5deg);
 }
 
 /* Animations */
 @keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-  20%, 40%, 60%, 80% { transform: translateX(4px); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
 }
 
 @keyframes typewriter-cursor {
@@ -64,7 +51,7 @@ body::before {
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out both;
+  animation: fade-in-up 0.5s ease-out both;
 }
 
 .animate-shake {
@@ -76,16 +63,65 @@ body::before {
   animation: typewriter-cursor 0.8s infinite;
 }
 
-/* Staggered card entrance */
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.2s; }
-.stagger-5 { animation-delay: 0.25s; }
-.stagger-6 { animation-delay: 0.3s; }
+.stagger-1 { animation-delay: 0.04s; }
+.stagger-2 { animation-delay: 0.08s; }
+.stagger-3 { animation-delay: 0.12s; }
+.stagger-4 { animation-delay: 0.16s; }
+.stagger-5 { animation-delay: 0.20s; }
+.stagger-6 { animation-delay: 0.24s; }
 
-/* Gold left border for high-credibility */
-.credibility-high {
-  border-left: 6px solid var(--color-meme-yellow);
-  padding-left: calc(1.5rem - 3px);
+/* Light Brutalism card */
+.card-lite {
+  background: white;
+  border: 1.5px solid #E5E5E5;
+  border-radius: 4px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
+}
+.card-lite:hover {
+  border-color: var(--color-meme-yellow);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+
+/* Search bar card */
+.search-card {
+  background: white;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* Yellow accent button */
+.btn-yellow {
+  background: var(--color-meme-yellow);
+  color: #1A1A1A;
+  border: none;
+  border-radius: 4px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.btn-yellow:hover {
+  background: #E8B820;
+  box-shadow: 0 4px 12px rgba(240,200,60,0.4);
+  transform: translateY(-1px);
+}
+
+/* Tag pill */
+.tag-pill {
+  background: var(--color-meme-gray);
+  border: 1px solid #E8E8E8;
+  border-radius: 20px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.tag-pill:hover {
+  background: var(--color-meme-yellow);
+  border-color: var(--color-meme-yellow);
+  transform: translateY(-1px);
 }
