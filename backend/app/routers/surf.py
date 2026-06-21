@@ -1,5 +1,5 @@
 import random
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.models.meme import SearchRequest, SearchResponse
 from app.routers.search import search_meme
 
@@ -18,5 +18,14 @@ SURF_KEYWORDS = [
 
 @router.get("/surf", response_model=SearchResponse)
 async def random_surf():
-    keyword = random.choice(SURF_KEYWORDS)
-    return await search_meme(SearchRequest(keyword=keyword))
+    # 随机打乱，逐个尝试直到找到一个能搜到的
+    keywords = random.sample(SURF_KEYWORDS, len(SURF_KEYWORDS))
+    for keyword in keywords:
+        try:
+            return await search_meme(SearchRequest(keyword=keyword))
+        except HTTPException:
+            continue
+    raise HTTPException(
+        status_code=404,
+        detail="随机冲浪失败：所有关键词都未找到结果，请稍后重试",
+    )
