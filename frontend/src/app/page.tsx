@@ -1,65 +1,140 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import SearchBar from "@/components/SearchBar";
+import SurfButton from "@/components/SurfButton";
+import MemeArchive from "@/components/MemeArchive";
+import { searchMeme, randomSurf, SearchResponse } from "@/lib/api";
+
+const HOT_TAGS = ["鸡你太美", "电子榨菜", "i人e人", "显眼包", "遥遥领先"];
 
 export default function Home() {
+  const [result, setResult] = useState<SearchResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSearch = async (keyword: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await searchMeme(keyword);
+      setResult(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "搜索失败");
+      setResult(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSurf = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await randomSurf();
+      setResult(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "冲浪失败");
+      setResult(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="min-h-screen p-6 md:p-12 max-w-4xl mx-auto">
+      {/* 标题 */}
+      <header className="mb-12 text-center">
+        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-4">
+          🔍 梗的起源、分析与二创
+        </h1>
+        <p className="text-xl italic text-gray-600 font-mono">
+          &ldquo;每个梗背后，都是一个时代的情绪切片&rdquo;
+        </p>
+      </header>
+
+      {/* 搜索栏 */}
+      <div className="flex justify-center mb-8">
+        <SearchBar onSearch={handleSearch} isLoading={isLoading} />
+      </div>
+
+      {/* 快捷入口 */}
+      {!result && !error && (
+        <div className="grid grid-cols-2 gap-4 mb-8 max-w-2xl mx-auto">
+          <SurfButton onSurf={handleSurf} isLoading={isLoading} />
+
+          <button
+            onClick={() => handleSearch("鸡你太美")}
+            className="border-3 border-black bg-white p-6 text-center cursor-pointer
+                       shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+                       hover:shadow-[-4px_-4px_0px_0px_rgba(0,0,0,1)]
+                       hover:-translate-x-[2px] hover:-translate-y-[2px]
+                       transition-all"
+          >
+            <span className="text-2xl">📦</span>
+            <p className="font-bold mt-2">梗档案库</p>
+            <p className="text-sm text-gray-500 font-mono">本地精选 8 条</p>
+          </button>
+        </div>
+      )}
+
+      {/* 热门标签 */}
+      {!result && !error && (
+        <div className="flex flex-wrap gap-2 justify-center max-w-2xl mx-auto">
+          {HOT_TAGS.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => handleSearch(tag)}
+              className="border-2 border-black px-2 py-0.5 text-xs font-mono bg-meme-yellow
+                         hover:bg-meme-coral hover:text-white transition-colors cursor-pointer"
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Loading 骨架 */}
+      {isLoading && (
+        <div className="max-w-2xl mx-auto mt-8 space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="border-3 border-black bg-white p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] animate-pulse"
+            >
+              <div className="h-4 bg-gray-200 w-3/4 mb-2" />
+              <div className="h-3 bg-gray-100 w-full" />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <div className="max-w-2xl mx-auto mt-8 border-3 border-black bg-black text-meme-yellow p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-lg font-bold mb-2">⚠️ 搜索失败</p>
+          <p className="font-mono">{error}</p>
+          <button
+            onClick={() => setError(null)}
+            className="mt-4 border-3 border-meme-yellow px-6 py-3 font-bold uppercase bg-meme-yellow text-black cursor-pointer
+                       shadow-[3px_3px_0px_0px_rgba(255,215,0,1)]
+                       hover:shadow-[-3px_-3px_0px_0px_rgba(255,215,0,1)]
+                       active:shadow-none active:translate-x-[1px] active:translate-y-[1px]
+                       transition-all"
+          >
+            重试
+          </button>
+        </div>
+      )}
+
+      {/* 结果 */}
+      {result && !isLoading && (
+        <MemeArchive
+          data={result}
+          onSurf={handleSurf}
+          onBack={() => setResult(null)}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      )}
+    </main>
   );
 }
