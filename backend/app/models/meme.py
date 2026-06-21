@@ -2,9 +2,9 @@ from pydantic import BaseModel, Field
 
 
 class Source(BaseModel):
-    title: str = Field(..., description="来源标题")
-    url: str = Field(..., description="来源链接")
-    platform: str = Field(..., description="来源平台")
+    title: str = Field(..., min_length=1, description="来源标题")
+    url: str = Field(..., min_length=1, description="来源链接")
+    platform: str = Field(..., min_length=1, description="来源平台")
 
 
 class MemeArchive(BaseModel):
