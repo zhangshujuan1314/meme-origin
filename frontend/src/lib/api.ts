@@ -47,3 +47,14 @@ export async function randomSurf(): Promise<SearchResponse> {
 
   return res.json();
 }
+
+export interface ArchiveSummary {
+  keyword: string;
+  origin: string;
+}
+
+export async function listArchives(): Promise<ArchiveSummary[]> {
+  const res = await fetch(`${API_BASE}/api/archive`);
+  if (!res.ok) throw new Error("获取档案列表失败");
+  return res.json();
+}

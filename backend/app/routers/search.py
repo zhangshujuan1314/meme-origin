@@ -4,8 +4,21 @@ from app.models.meme import SearchRequest, SearchResponse, MemeArchive, Source
 from app.services.exa_search import search_exa, ExaError
 from app.services.moegirl import search_moegirl, MoegirlError
 from app.services.deepseek import analyze_meme, DeepSeekError
+from app.routers.archive import _load_archive
 
 router = APIRouter(prefix="/api", tags=["search"])
+
+
+def _lookup_local(keyword: str) -> SearchResponse | None:
+    """在本地档案中查找，命中则返回 SearchResponse，否则返回 None"""
+    for item in _load_archive():
+        if item["keyword"] == keyword:
+            return SearchResponse(
+                keyword=item["keyword"],
+                archive=MemeArchive(**item["archive"]),
+                raw_snippets=[],
+            )
+    return None
 
 
 @router.post("/search", response_model=SearchResponse)
@@ -26,7 +39,11 @@ async def search_meme(req: SearchRequest):
     if not isinstance(moegirl_results, (MoegirlError, Exception)):
         all_results.extend(moegirl_results)
 
+    # 网络搜索无结果 → 尝试本地档案回退
     if not all_results:
+        local = _lookup_local(keyword)
+        if local:
+            return local
         raise HTTPException(
             status_code=404,
             detail="未找到相关结果，换个关键词试试？",

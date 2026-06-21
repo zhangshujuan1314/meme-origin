@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
 import SurfButton from "@/components/SurfButton";
 import MemeArchive from "@/components/MemeArchive";
-import { searchMeme, randomSurf, SearchResponse } from "@/lib/api";
+import { searchMeme, randomSurf, listArchives, SearchResponse, ArchiveSummary } from "@/lib/api";
 
 const HOT_TAGS = ["鸡你太美", "电子榨菜", "i人e人", "显眼包", "遥遥领先"];
 
@@ -12,10 +12,17 @@ export default function Home() {
   const [result, setResult] = useState<SearchResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showArchive, setShowArchive] = useState(false);
+  const [archives, setArchives] = useState<ArchiveSummary[]>([]);
+
+  useEffect(() => {
+    listArchives().then(setArchives).catch(() => {});
+  }, []);
 
   const handleSearch = async (keyword: string) => {
     setIsLoading(true);
     setError(null);
+    setShowArchive(false);
     try {
       const data = await searchMeme(keyword);
       setResult(data);
@@ -30,6 +37,7 @@ export default function Home() {
   const handleSurf = async () => {
     setIsLoading(true);
     setError(null);
+    setShowArchive(false);
     try {
       const data = await randomSurf();
       setResult(data);
@@ -64,7 +72,7 @@ export default function Home() {
           <SurfButton onSurf={handleSurf} isLoading={isLoading} />
 
           <button
-            onClick={() => handleSearch("鸡你太美")}
+            onClick={() => setShowArchive(!showArchive)}
             className="border-3 border-black bg-white p-6 text-center cursor-pointer
                        shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
                        hover:shadow-[-4px_-4px_0px_0px_rgba(0,0,0,1)]
@@ -73,8 +81,28 @@ export default function Home() {
           >
             <span className="text-2xl">📦</span>
             <p className="font-bold mt-2">梗档案库</p>
-            <p className="text-sm text-gray-500 font-mono">本地精选 8 条</p>
+            <p className="text-sm text-gray-500 font-mono">本地精选 {archives.length || 8} 条</p>
           </button>
+        </div>
+      )}
+
+      {/* 档案列表面板 */}
+      {showArchive && !result && !error && (
+        <div className="max-w-2xl mx-auto mb-8 border-3 border-black bg-white p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <h3 className="text-lg font-bold mb-4">📦 本地精选梗档案</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {archives.map((a) => (
+              <button
+                key={a.keyword}
+                onClick={() => handleSearch(a.keyword)}
+                className="border-2 border-black p-3 text-left font-mono text-sm
+                           hover:bg-meme-yellow transition-colors cursor-pointer"
+              >
+                <span className="font-bold">{a.keyword}</span>
+                <p className="text-xs text-gray-500 mt-1 truncate">{a.origin}</p>
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
