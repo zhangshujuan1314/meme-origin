@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme inline {
+@theme {
   --color-meme-yellow: #FFD700;
   --color-meme-coral: #FF6B6B;
   --color-meme-cream: #FFFDF7;
